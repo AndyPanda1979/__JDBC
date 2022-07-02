@@ -59,4 +59,8 @@ public class User {
     public void setAge(Byte age) {
         this.age = age;
     }
+
+    public String toString() {
+        return  "User -> " + this.getId() + ". Имя : " + this.getName() + " " + this.getLastName() + ", Возраст : " + this.getAge();
+    }
 }
