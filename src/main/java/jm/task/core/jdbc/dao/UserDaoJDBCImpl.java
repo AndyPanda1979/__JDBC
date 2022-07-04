@@ -30,7 +30,6 @@ public class UserDaoJDBCImpl implements UserDao {
                     System.out.println("Не удалось создать таблицу");
                     e.printStackTrace();
                     currentConnection.rollback();
-                    currentConnection.close();
                 }
             } else {
                 System.out.println("Не удалось установить соединение с БД");
@@ -49,7 +48,6 @@ public class UserDaoJDBCImpl implements UserDao {
                 } catch (SQLException e) {
                     System.out.println("Не удалось удалить таблицу");
                     currentConnection.rollback();
-                    currentConnection.close();
                 }
             } else {
                 System.out.println("Не удалось установить соединение с БД");
@@ -60,18 +58,18 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) throws SQLException {
         try (Connection currentConnection = Util.getConnection()) {
             if (currentConnection != null) {
-                try (PreparedStatement preparedStatement = currentConnection.prepareStatement("INSERT INTO `test1`.`users` (`name`, `lastName`, `age`) VALUES (?, ?, ?)")) {
-                    preparedStatement.setString(1, name);
-                    preparedStatement.setString(2, lastName);
-                    preparedStatement.setByte(3, age);
-                    currentConnection.setAutoCommit(false);
-                    preparedStatement.executeUpdate();
-                    currentConnection.commit();
-                    System.out.println("User с именем - " + name + " " + lastName + " добавлен в БД");
+                try {
+                PreparedStatement preparedStatement = currentConnection.prepareStatement("INSERT INTO `test1`.`users` (`name`, `lastName`, `age`) VALUES (?, ?, ?)");
+                preparedStatement.setString(1, name);
+                preparedStatement.setString(2, lastName);
+                preparedStatement.setByte(3, age);
+                currentConnection.setAutoCommit(false);
+                preparedStatement.executeUpdate();
+                currentConnection.commit();
+                System.out.println("User с именем - " + name + " " + lastName + " добавлен в БД");
                 } catch (SQLException e) {
                     System.out.println("Ошибка вставки записи, User не был добавлен");
                     currentConnection.rollback();
-                    currentConnection.close();
                 }
             } else {
                 System.out.println("Не удалось установить соединение с БД");
@@ -83,7 +81,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) throws SQLException {
         try (Connection currentConnection = Util.getConnection()) {
             if (currentConnection != null) {
-                try (PreparedStatement preparedStatement = currentConnection.prepareStatement("DELETE FROM `users` WHERE `id`=(?)")) {
+                try {
+                    PreparedStatement preparedStatement = currentConnection.prepareStatement("DELETE FROM `users` WHERE `id`=(?)");
                     preparedStatement.setLong(1, id);
                     currentConnection.setAutoCommit(false);
                     preparedStatement.executeUpdate();
@@ -91,7 +90,6 @@ public class UserDaoJDBCImpl implements UserDao {
                 } catch (SQLException e) {
                     System.out.println("Ошибка удаления записи");
                     currentConnection.rollback();
-                    currentConnection.close();
                 }
             } else {
                 System.out.println("Не удалось установить соединение с БД");
@@ -102,7 +100,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() throws SQLException {
         try (Connection currentConnection = Util.getConnection()) {
             if (currentConnection != null) {
-                try (Statement statement = currentConnection.createStatement()) {
+                try  {
+                    Statement statement = currentConnection.createStatement();
                     String rawSQL = "SELECT * FROM test1.users;";
                     currentConnection.setAutoCommit(false);
                     ResultSet result = statement.executeQuery(rawSQL);
@@ -135,7 +134,6 @@ public class UserDaoJDBCImpl implements UserDao {
                 } catch (SQLException e) {
                     System.out.println("Не удалось очистить таблицу");
                     currentConnection.rollback();
-                    currentConnection.close();
                 }
             } else {
                 System.out.println("Не удалось установить соединение с БД");
